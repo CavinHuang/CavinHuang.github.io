@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="baidu-site-verification" content="rqskM4bdtP"><meta name="viewport" content="device-width, initial-scale=1, maximum-scale=1,user-scalable=no"><title>vue plugin 插件编写以loading为例-CavinHuangのBlog-http://blog.zukmb.cn</title><meta name="keywords" content="前端学习,php学习,个人博客,HTML,CSS,JS"><meta name="description" content="cavinHuang个人博客，这里记录学习和生活的点滴！"><meta name="google-site-verification" content="zOYxWUgmeogC0qY76WLP0eWl8r9E8jk_qU927Ij7tbs"><script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5a4c3745fa28006f"></script><link rel="stylesheet" href="/css/yoyo.css"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.3"><script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script><script src="https://cdn.bootcss.com/velocity/1.5.0/velocity.min.js"></script><meta name="generator" content="Hexo 5.3.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body></body></html><div class="app"><div class="left-container"><div class="left-layout-container pc"><div class="user-info"><a href="/"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4"></a><div class="login-name">CavinHuang</div><div class="slog">来不及总结自己,愿天大地大,我独一无二!</div></div><ul class="other-site"><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/github.png"></li><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/weibo.png"></li></ul><ul class="left-menu"><li><a href="/archives">文章</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about">关于</a></li></ul><div class="qq-group"><span>读万卷书</span><span>行万里路</span></div><div class="copyright">@ 2017 - 2017 CavinHuang</div></div></div><div id="app-aside"><aside class="aside"><div class="aside-user"><div class="avatar"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4" alt="CavinHuang"></div><div class="profile"><h3 class="name">CavinHuang</h3><p class="email">来不及总结自己,愿天大地大,我独一无二!</p></div></div><div class="aside-nav"><nav class="nav-list"><a class="item" href="/archives"><span>文章</span></a><a class="item" href="/categories"><span>分类</span></a><a class="item" href="/tags"><span>标签</span></a><a class="item" href="/about"><span>关于</span></a></nav></div></aside></div><div class="blog-container main-container" id="content-outer"><nav class="navbar"><div class="navbar-container"><div class="navbar-header"><a class="navbar-menu" id="navMenu" href="javascript:;" data-isOpen="false"><i class="iconfont icon-menu"></i></a><a class="navbar-logo" href="/"><img src="/assets/img/logo.png"></a><a class="navbar-search" href=""></a></div></div></nav><div class="blog-list-container" id="content-inner"><article class="article-container" id="post"><div class="article-header"><h1 class="article-title">vue plugin 插件编写以loading为例</h1><div class="article-subtitle"><div class="publish-time fl">发布时间:<span>2017/11/24 10:30:20</span></div><div class="categories">分类:<a href="/categories/frontend/"><span>frontend</span></a>/<a href="/categories/frontend/vue/"><span>vue</span></a></div></div></div><div class="article-word-count"><ul><div class="word-count-item">全文约<span class="post-count">973</span>字</div><div class="word-count-item">预计需要<span class="post-count">4</span>分钟</div></ul></div><div class="article-content"><p>我们在使用vue开发的过程中，经常会遇到这两个问题：</p><a id="more"></a><p>我要使用loading(加载动画) toast（浮层提示） dialog（弹框提示）之类的全局性组件，但是用全局组件注册的话非常麻烦，还要在template标签中书写组件html代码然后参数通过在data选项中注册变量来控制组件的显示/隐藏/提示语，显得异常麻烦~<br>我要使用某些全局函数例如（axios）来进行某些操作，如果每次使用都需要import或者require的话，是一件不太优雅的事情<br>所以我们就想到在vue的全局实例Vue或者指向这个实例的指针this的原型上添加某一方法来达到随用随取的效果。</p><p>本文以loading为例，讲下如何编写一个Vue插件。<br>首先我们编写一个普通的loading组件，作为插件的模板：</p><pre class="line-numbers language-javascript"><code class="language-javascript"> <span class="token comment" spellcheck="true">// my-project/src/plugin/loading/loading.vue</span>
+<span class="token operator">&lt;</span>template<span class="token operator">></span>
+  <span class="token operator">&lt;</span>transition <span class="token punctuation">:</span>name<span class="token operator">=</span><span class="token string">"animateName"</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings"</span> v<span class="token operator">-</span>show<span class="token operator">=</span><span class="token string">"isShow"</span><span class="token operator">></span>
+      <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings__loader"</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings__loader__dot"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+        <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings__loader__dot"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+        <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings__loader__dot"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+        <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings__loader__dot"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+        <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"loadings__loader__dot"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>transition<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span>
+<span class="token operator">&lt;</span>script type<span class="token operator">=</span><span class="token string">"text/babel"</span><span class="token operator">></span>
+  <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        isShow<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+        hasAnimate<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    computed<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">/**
+       * 动画效果样式，没有返回空
+       * @return &amp;#123;String&amp;#125; 样式
+       */</span>
+      <span class="token function">animateName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>hasAnimate <span class="token operator">?</span> <span class="token string">'opacity'</span> <span class="token punctuation">:</span> <span class="token string">''</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    methods<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">/**
+       * 开启动画效果
+       */</span>
+      <span class="token function">opemAnimate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>hasAnimate <span class="token operator">=</span> <span class="token boolean">true</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+      <span class="token comment" spellcheck="true">/**
+       * 去除动画效果
+       * @return &amp;#123;Promise&amp;#125; 返回promise
+       */</span>
+      <span class="token function">removeAnimate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>hasAnimate <span class="token operator">=</span> <span class="token boolean">false</span>
+          <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+      <span class="token comment" spellcheck="true">/**
+       * 显示动画loading
+       */</span>
+      <span class="token function">show</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>isShow <span class="token operator">=</span> <span class="token boolean">true</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+      <span class="token comment" spellcheck="true">/**
+       * 隐藏动画loading
+       */</span>
+      <span class="token function">hide</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>isShow <span class="token operator">=</span> <span class="token boolean">false</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span>
+
+<span class="token operator">&lt;</span>style lang<span class="token operator">=</span><span class="token string">"stylus"</span> rel<span class="token operator">=</span><span class="token string">"stylesheet/stylus"</span> scope<span class="token operator">></span>
+
+  <span class="token punctuation">.</span>loadings <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    position<span class="token punctuation">:</span> fixed<span class="token punctuation">;</span>
+    width<span class="token punctuation">:</span> <span class="token number">100</span><span class="token operator">%</span><span class="token punctuation">;</span>
+    height<span class="token punctuation">:</span> <span class="token number">100</span><span class="token operator">%</span><span class="token punctuation">;</span>
+    top<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    left<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    background<span class="token punctuation">:</span> transparent<span class="token punctuation">;</span>
+
+    <span class="token operator">&amp;</span>__loader <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      position absolute
+      top <span class="token number">50</span><span class="token operator">%</span>
+      left <span class="token number">50</span><span class="token operator">%</span>
+      transform <span class="token function">translate3d</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">50</span><span class="token operator">%</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">50</span><span class="token operator">%</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span>
+
+      <span class="token operator">&amp;</span>__dot <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        width 40px
+        height 40px
+        background #3ac
+        border<span class="token operator">-</span>radius <span class="token number">100</span><span class="token operator">%</span>
+        display inline<span class="token operator">-</span>block
+        animation slide 1s infinite
+        margin<span class="token operator">-</span>right<span class="token punctuation">:</span> 6px<span class="token punctuation">;</span>
+
+        <span class="token keyword">for</span> index <span class="token keyword">in</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token number">5</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+          <span class="token operator">&amp;</span><span class="token punctuation">:</span>nth<span class="token operator">-</span><span class="token function">child</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>index<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            animation<span class="token operator">-</span>delay <span class="token punctuation">(</span><span class="token number">0.2</span> <span class="token operator">+</span> <span class="token number">0</span><span class="token punctuation">.</span>1s <span class="token operator">*</span> index<span class="token punctuation">)</span>
+            <span class="token comment" spellcheck="true">// background green(#ce2424, (50 * index))</span>
+            background <span class="token function">lighten</span><span class="token punctuation">(</span>#ce2424<span class="token punctuation">,</span> <span class="token punctuation">(</span>index <span class="token operator">*</span> <span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+  @keyframes slide
+    <span class="token number">0</span><span class="token operator">%</span>
+      transform <span class="token function">scale</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    <span class="token number">50</span><span class="token operator">%</span>
+      opacity <span class="token punctuation">.</span><span class="token number">3</span>
+      transform <span class="token function">scale</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token number">100</span><span class="token operator">%</span>
+      transform <span class="token function">scale</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+  <span class="token punctuation">.</span>opacity <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span><span class="token operator">-</span>enter<span class="token operator">-</span>active<span class="token punctuation">,</span> <span class="token operator">&amp;</span><span class="token operator">-</span>leave<span class="token operator">-</span>active <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      transition<span class="token punctuation">:</span> all <span class="token number">0</span><span class="token punctuation">.</span>6s
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span><span class="token operator">-</span>enter<span class="token punctuation">,</span> <span class="token operator">&amp;</span><span class="token operator">-</span>leave<span class="token operator">-</span>active <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      opacity<span class="token punctuation">:</span> <span class="token number">0</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>style<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>这时如果你将其注册为全局组件，也是可以使用的，但是前面我们说过，这样使用非常不优雅</p><p>然后我们将其做成插件</p><pre class="line-numbers language-javascript"><code class="language-javascript"> <span class="token comment" spellcheck="true">// my-project/src/plugin/loading/index.js</span>
+<span class="token keyword">import</span> Loading <span class="token keyword">from</span> <span class="token string">'./loading.vue'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">/**
+   * 每个插件都有的install方法，用于安装插件
+   * @param &amp;#123;Object&amp;#125; Vue - Vue类
+   * @param &amp;#123;Object&amp;#125; [pluginOptions] - 插件安装配置
+   */</span>
+  <span class="token function">install</span><span class="token punctuation">(</span>Vue<span class="token punctuation">,</span> pluginOptions <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 创建"子类"方便挂载</span>
+    <span class="token keyword">const</span> VueLoading <span class="token operator">=</span> Vue<span class="token punctuation">.</span><span class="token function">extend</span><span class="token punctuation">(</span>Loading<span class="token punctuation">)</span>
+    <span class="token keyword">let</span> loading <span class="token operator">=</span> <span class="token keyword">null</span>
+
+    <span class="token comment" spellcheck="true">/**
+     * 初始化并显示loading
+     * @returns &amp;#123;Promise&amp;#125; Promise实例
+     */</span>
+    <span class="token keyword">function</span> <span class="token function">$loading</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 第一次调用</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>loading<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+          loading <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VueLoading</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          <span class="token comment" spellcheck="true">// 手动创建一个未挂载的实例</span>
+          loading<span class="token punctuation">.</span><span class="token function">$mount</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          <span class="token comment" spellcheck="true">// 挂载</span>
+          document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span>pluginOptions<span class="token punctuation">.</span>container <span class="token operator">||</span> <span class="token string">'body'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>loading<span class="token punctuation">.</span>$el<span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 显示loading</span>
+        loading<span class="token punctuation">.</span><span class="token function">show</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 定义关闭loading方法</span>
+    $loading<span class="token punctuation">.</span>end <span class="token operator">=</span> <span class="token punctuation">(</span>noAnimate <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>loading <span class="token operator">||</span> <span class="token operator">!</span>loading<span class="token punctuation">.</span>isShow<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+          <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          <span class="token keyword">return</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 首页判断是否在关闭时需要动画</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>noAnimate<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+          <span class="token comment" spellcheck="true">// 默认只在此次行为下移除动画,之后的行为仍有动画</span>
+          loading<span class="token punctuation">.</span><span class="token function">removeAnimate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            loading<span class="token punctuation">.</span><span class="token function">opemAnimate</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+        loading<span class="token punctuation">.</span><span class="token function">hide</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+    Vue<span class="token punctuation">.</span>loading <span class="token operator">=</span> Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$loading <span class="token operator">=</span> $loading
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>然后我们在入口文件app.js中引入并且安装插件就可以了：</p><pre class="line-numbers language-javascript"><code class="language-javascript">···
+<span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
+<span class="token keyword">import</span> VueLoading <span class="token keyword">from</span> <span class="token string">'./loading'</span>
+···
+
+···
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>VueLoading<span class="token punctuation">,</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  container<span class="token punctuation">:</span> <span class="token string">'.app'</span><span class="token punctuation">,</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+···<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>接下来可以在你任意想要的地方执行this.loading()就可以启动loading动画了，在需要关闭的地方执行this.loading.end()就可以关闭咯</p></div><div id="side-right-bar"><div class="close-right-bar"></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经阅读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"></div></div></div><div class="right-btn" id="right-btn"><span>目录</span></div><div class="article-bottom"><div class="addthis_inline_share_toolbox fr"></div></div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者:</span><span class="post-copyright-info"><a href="mailto:undefined">CavinHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接:</span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="http://blog.zukmb.cnposts/d11faa5b/">http://blog.zukmb.cn/posts/d11faa5b/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明:</span><span class="post-copyright-info">转载请注明来自<a href="http://blog.zukmb.cn" target="_blank" style="font-size: 18px;">CavinHuangのBlog</a>！</span></div></div><div class="article-pagenate"><div class="article-prev fl"><span>←</span><a href="/posts/c586c075/">Linux创建用户只能访问某个目录</a></div><div class="article-next fr"><a href="/posts/fae4e3c2/">Request —— 让 Node.js http请求变得超简单</a><span>→</span></div></div></article></div><footer class="footer"><div id="toTop" style="display: none;">Back to Top</div><div class="footer-content"><p>©2015 - 2018 By cavinHuang</p><div class="framework-info"><span>Driven -</span> <a target="_blank" rel="noopener" href="https://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme -</span> <a href=""><span>yoyo</span></a></div><div class="site-count"><ul><div class="site-count-item"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></div><div class="site-count-item"><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span></div></ul></div></div></footer><script>(function(){
+var bp = document.createElement('script');
+var curProtocol = window.location.protocol.split(':')[0];
+if (curProtocol === 'https') {
+bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+}
+else {
+bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+}
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(bp, s);
+})();
+</script><script>(function(){
+var src = (document.location.protocol == "http:") ? "http://js.passport.qihucdn.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5":"https://jspassport.ssl.qhimg.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5";
+document.write('<script src="' + src + '" id="sozz"><\\/script>');
+})();
+</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-124916034-1"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-124916034-1');</script></div></div><canvas class="fireworks"></canvas><script src="/js/velocity.ui.min.js"></script><script src="/js/yoyo.js"></script><script src="/js/scroll.js"></script><script src="/js/anime.min.js"></script><script src="/js/fireworks.js"></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

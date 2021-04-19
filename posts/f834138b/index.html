@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="baidu-site-verification" content="rqskM4bdtP"><meta name="viewport" content="device-width, initial-scale=1, maximum-scale=1,user-scalable=no"><title>正则表达式解析一个完整的url-CavinHuangのBlog-http://blog.zukmb.cn</title><meta name="keywords" content="前端学习,php学习,个人博客,HTML,CSS,JS"><meta name="description" content="cavinHuang个人博客，这里记录学习和生活的点滴！"><meta name="google-site-verification" content="zOYxWUgmeogC0qY76WLP0eWl8r9E8jk_qU927Ij7tbs"><script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5a4c3745fa28006f"></script><link rel="stylesheet" href="/css/yoyo.css"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.3"><script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script><script src="https://cdn.bootcss.com/velocity/1.5.0/velocity.min.js"></script><meta name="generator" content="Hexo 5.3.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body></body></html><div class="app"><div class="left-container"><div class="left-layout-container pc"><div class="user-info"><a href="/"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4"></a><div class="login-name">CavinHuang</div><div class="slog">来不及总结自己,愿天大地大,我独一无二!</div></div><ul class="other-site"><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/github.png"></li><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/weibo.png"></li></ul><ul class="left-menu"><li><a href="/archives">文章</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about">关于</a></li></ul><div class="qq-group"><span>读万卷书</span><span>行万里路</span></div><div class="copyright">@ 2017 - 2017 CavinHuang</div></div></div><div id="app-aside"><aside class="aside"><div class="aside-user"><div class="avatar"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4" alt="CavinHuang"></div><div class="profile"><h3 class="name">CavinHuang</h3><p class="email">来不及总结自己,愿天大地大,我独一无二!</p></div></div><div class="aside-nav"><nav class="nav-list"><a class="item" href="/archives"><span>文章</span></a><a class="item" href="/categories"><span>分类</span></a><a class="item" href="/tags"><span>标签</span></a><a class="item" href="/about"><span>关于</span></a></nav></div></aside></div><div class="blog-container main-container" id="content-outer"><nav class="navbar"><div class="navbar-container"><div class="navbar-header"><a class="navbar-menu" id="navMenu" href="javascript:;" data-isOpen="false"><i class="iconfont icon-menu"></i></a><a class="navbar-logo" href="/"><img src="/assets/img/logo.png"></a><a class="navbar-search" href=""></a></div></div></nav><div class="blog-list-container" id="content-inner"><article class="article-container" id="post"><div class="article-header"><h1 class="article-title">正则表达式解析一个完整的url</h1><div class="article-subtitle"><div class="publish-time fl">发布时间:<span>2018/3/17 19:46:10</span></div><div class="categories">分类:<a href="/categories/frontend/"><span>frontend</span></a></div></div></div><div class="article-word-count"><ul><div class="word-count-item">全文约<span class="post-count">841</span>字</div><div class="word-count-item">预计需要<span class="post-count">3</span>分钟</div></ul></div><div class="article-content"><blockquote><p>题目：解析一个完整的url,返回Object包含域与window.location相同</p></blockquote><a id="more"></a><p>答案：</p><pre class="line-numbers language-js"><code class="language-js"><span class="token comment" spellcheck="true">/**
+ * 解析一个url并生成window.location对象中包含的域
+ * location:
+ * &amp;#123;
+ *      href: '包含完整的url',
+ *      origin: '包含协议到pathname之前的内容',
+ *      protocol: 'url使用的协议，包含末尾的:',
+ *      username: '用户名', // 暂时不支持
+ *      password: '密码',  // 暂时不支持
+ *      host: '完整主机名，包含:和端口',
+ *      hostname: '主机名，不包含端口'
+ *      port: '端口号',
+ *      pathname: '服务器上访问资源的路径/开头',
+ *      search: 'query string，?开头',
+ *      hash: '#开头的fragment identifier'
+ * &amp;#125;
+ *
+ * @param &amp;#123;string&amp;#125; url 需要解析的url
+ * @return &amp;#123;Object&amp;#125; 包含url信息的对象
+ */</span>
+
+
+ <span class="token keyword">function</span> <span class="token function">parseUrl</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> result <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> keys <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'href'</span><span class="token punctuation">,</span> <span class="token string">'origin'</span><span class="token punctuation">,</span> <span class="token string">'protocol'</span><span class="token punctuation">,</span> <span class="token string">'host'</span><span class="token punctuation">,</span>
+                <span class="token string">'hostname'</span><span class="token punctuation">,</span> <span class="token string">'port'</span><span class="token punctuation">,</span> <span class="token string">'pathname'</span><span class="token punctuation">,</span> <span class="token string">'search'</span><span class="token punctuation">,</span> <span class="token string">'hash'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> i<span class="token punctuation">,</span> len<span class="token punctuation">;</span>
+    <span class="token keyword">var</span> regexp <span class="token operator">=</span> <span class="token regex">/(([^:]+:)\/\/(([^:\/\?#]+)(:\d+)?))(\/[^?#]*)?(\?[^#]*)?(#.*)?/</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">var</span> match <span class="token operator">=</span> regexp<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+     console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'match='</span><span class="token punctuation">,</span> match<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>match<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> keys<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token operator">--</span>i<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            result<span class="token punctuation">[</span>keys<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> match<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">?</span> match<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+     console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'result='</span><span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token function">parseUrl</span><span class="token punctuation">(</span><span class="token string">"http://test.com:8080?name=1&amp;password=2#page1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>结果：</p><pre class="line-numbers language-js"><code class="language-js">match<span class="token operator">=</span><span class="token punctuation">[</span>
+  <span class="token string">'http://test.com:8080?name=1&amp;password=2#page1'</span><span class="token punctuation">,</span>
+  <span class="token string">'http://test.com:8080'</span><span class="token punctuation">,</span>
+  <span class="token string">'http:'</span><span class="token punctuation">,</span>
+  <span class="token string">'test.com:8080'</span><span class="token punctuation">,</span>
+  <span class="token string">'test.com'</span><span class="token punctuation">,</span>
+  <span class="token string">':8080'</span><span class="token punctuation">,</span>
+  undefined<span class="token punctuation">,</span>
+  <span class="token string">'?name=1&amp;password=2'</span><span class="token punctuation">,</span>
+  <span class="token string">'#page1'</span><span class="token punctuation">,</span>
+  index<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  input<span class="token punctuation">:</span> <span class="token string">'http://test.com:8080?name=1&amp;password=2#page1'</span>
+<span class="token punctuation">]</span>
+
+result<span class="token operator">=</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  hash<span class="token punctuation">:</span> <span class="token string">'#page1'</span><span class="token punctuation">,</span>
+  search<span class="token punctuation">:</span> <span class="token string">'?name=1&amp;password=2'</span><span class="token punctuation">,</span>
+  pathname<span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+  port<span class="token punctuation">:</span> <span class="token string">':8080'</span><span class="token punctuation">,</span>
+  hostname<span class="token punctuation">:</span> <span class="token string">'test.com'</span><span class="token punctuation">,</span>
+  host<span class="token punctuation">:</span> <span class="token string">'test.com:8080'</span><span class="token punctuation">,</span>
+  protocol<span class="token punctuation">:</span> <span class="token string">'http:'</span><span class="token punctuation">,</span>
+  origin<span class="token punctuation">:</span> <span class="token string">'http://test.com:8080'</span><span class="token punctuation">,</span>
+  href<span class="token punctuation">:</span> <span class="token string">'http://test.com:8080?name=1&amp;password=2#page1'</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>没错，一眼就看到了难以理解的是那段正则表达式：</p><pre class="line-numbers language-js"><code class="language-js"><span class="token regex">/(([^:]+:)\/\/(([^:\/\?#]+)(:\d+)?))(\/[^?#]*)?(\?[^#]*)?(#.*)?/</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>刚好最近看了精通正则表达式一书（的20%，哈哈看不完），刚好可以练练手了</p><ol><li>匹配的数组长度为11个，为什么</li><li>每一个是怎么匹配来的<br>```js<br>首先，在分析之前，先给大家补补基础概念，知道的就跳过<br>?: 匹配0个或一个</li></ol><ul><li> 匹配0个或多个,</li></ul><p>+: 一次或多次，至少出现一次<br>.* 贪婪匹配：在满足匹配时，匹配尽可能长的字符串，默认情况下，采用贪婪匹配（没有问号）</p><p>// 非贪婪匹配：在满足匹配时，匹配尽可能短的字符串，使用?来表示非贪婪匹配<br>? 非贪婪，最小匹配（重点，后面会用到）<br>*? 重复任意次，但尽可能少重复<br>+? 重复1次或更多次，但尽可能少重复<br>?? 重复0次或1次，但尽可能少重复<br>{n,m}? 重复n到m次，但尽可能少重复<br>{n,}? 重复n次以上，但尽可能少重复</p><p>//环视<br>‘jeffs’.replace(/(?&lt;=jeff)(?=s)/i, ‘“‘)<br>//顺序环视和逆向环视,?= 匹配的目标位置后紧跟s,匹配的目标位置前紧邻jeff jeff目标s，结果输出：jeff”s</p><p>[^]: ^表示非 //示例：[^u]</p><p>//[]里面的元字符只是普通字符<br>/03[-./]22/.test(‘03-22’) 结果输出：true</p><p>//() ：标记一个子表达式的开始和结束位置。子表达式可以获取供以后使用</p><pre><code>
+进入正题，匹配的数组长度为11个，为什么？
+因为匹配结果是按照()的个数和顺序决定的，重点是前面9个
+最后两个[index: 0,input: &#39;http://test.com:8080?name=1&amp;password=2#page1&#39;]是regexp.exec函数自带返回的
+所以上面的表达式可以拆分为如下子表达式：
+
+```js
+(([^:]+:)\/\/(([^:\/\?#]+)(:\d+)?))(\/[^?#]*)?(\?[^#]*)?(#.*)?
+(([^:]+:)\/\/(([^:\/\?#]+)(:\d+)?))
+([^:]+:)
+(([^:\/\?#]+)(:\d+)?)
+([^:\/\?#]+)
+(:\d+)?
+(\/[^?#]*)?
+(\?[^#]*)?
+(#.*)?
+</code></pre><p>具体分析见下图：<br><img src="https://user-gold-cdn.xitu.io/2018/3/16/1622e2c97289603d?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="示意图"><br>思考题：<br>正则表达式分割之千分符格式：</p><pre class="line-numbers language-js"><code class="language-js"><span class="token number">213435324.099</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/\B(?=(\d&amp;#123;3&amp;#125;)+(?!\d))/g</span><span class="token punctuation">,</span> <span class="token string">','</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><div id="side-right-bar"><div class="close-right-bar"></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经阅读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"></div></div></div><div class="right-btn" id="right-btn"><span>目录</span></div><div class="article-bottom"><div class="addthis_inline_share_toolbox fr"></div></div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者:</span><span class="post-copyright-info"><a href="mailto:undefined">CavinHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接:</span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="http://blog.zukmb.cnposts/f834138b/">http://blog.zukmb.cn/posts/f834138b/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明:</span><span class="post-copyright-info">转载请注明来自<a href="http://blog.zukmb.cn" target="_blank" style="font-size: 18px;">CavinHuangのBlog</a>！</span></div></div><div class="article-pagenate"><div class="article-prev fl"><span>←</span><a href="/posts/ac468898/">H5手机端开发问题汇总及解决方案</a></div><div class="article-next fr"><a href="/posts/3f13de63/">mysql密码修改，创建远程用户记录</a><span>→</span></div></div></article></div><footer class="footer"><div id="toTop" style="display: none;">Back to Top</div><div class="footer-content"><p>©2015 - 2018 By cavinHuang</p><div class="framework-info"><span>Driven -</span> <a target="_blank" rel="noopener" href="https://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme -</span> <a href=""><span>yoyo</span></a></div><div class="site-count"><ul><div class="site-count-item"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></div><div class="site-count-item"><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span></div></ul></div></div></footer><script>(function(){
+var bp = document.createElement('script');
+var curProtocol = window.location.protocol.split(':')[0];
+if (curProtocol === 'https') {
+bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+}
+else {
+bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+}
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(bp, s);
+})();
+</script><script>(function(){
+var src = (document.location.protocol == "http:") ? "http://js.passport.qihucdn.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5":"https://jspassport.ssl.qhimg.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5";
+document.write('<script src="' + src + '" id="sozz"><\\/script>');
+})();
+</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-124916034-1"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-124916034-1');</script></div></div><canvas class="fireworks"></canvas><script src="/js/velocity.ui.min.js"></script><script src="/js/yoyo.js"></script><script src="/js/scroll.js"></script><script src="/js/anime.min.js"></script><script src="/js/fireworks.js"></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

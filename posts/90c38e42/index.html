@@ -1,0 +1,214 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="baidu-site-verification" content="rqskM4bdtP"><meta name="viewport" content="device-width, initial-scale=1, maximum-scale=1,user-scalable=no"><title>基于 Webpack 和 ES6 打造 JavaScript 类库-CavinHuangのBlog-http://blog.zukmb.cn</title><meta name="keywords" content="前端学习,php学习,个人博客,HTML,CSS,JS"><meta name="description" content="cavinHuang个人博客，这里记录学习和生活的点滴！"><meta name="google-site-verification" content="zOYxWUgmeogC0qY76WLP0eWl8r9E8jk_qU927Ij7tbs"><script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5a4c3745fa28006f"></script><link rel="stylesheet" href="/css/yoyo.css"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.3"><script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script><script src="https://cdn.bootcss.com/velocity/1.5.0/velocity.min.js"></script><meta name="generator" content="Hexo 5.3.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body></body></html><div class="app"><div class="left-container"><div class="left-layout-container pc"><div class="user-info"><a href="/"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4"></a><div class="login-name">CavinHuang</div><div class="slog">来不及总结自己,愿天大地大,我独一无二!</div></div><ul class="other-site"><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/github.png"></li><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/weibo.png"></li></ul><ul class="left-menu"><li><a href="/archives">文章</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about">关于</a></li></ul><div class="qq-group"><span>读万卷书</span><span>行万里路</span></div><div class="copyright">@ 2017 - 2017 CavinHuang</div></div></div><div id="app-aside"><aside class="aside"><div class="aside-user"><div class="avatar"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4" alt="CavinHuang"></div><div class="profile"><h3 class="name">CavinHuang</h3><p class="email">来不及总结自己,愿天大地大,我独一无二!</p></div></div><div class="aside-nav"><nav class="nav-list"><a class="item" href="/archives"><span>文章</span></a><a class="item" href="/categories"><span>分类</span></a><a class="item" href="/tags"><span>标签</span></a><a class="item" href="/about"><span>关于</span></a></nav></div></aside></div><div class="blog-container main-container" id="content-outer"><nav class="navbar"><div class="navbar-container"><div class="navbar-header"><a class="navbar-menu" id="navMenu" href="javascript:;" data-isOpen="false"><i class="iconfont icon-menu"></i></a><a class="navbar-logo" href="/"><img src="/assets/img/logo.png"></a><a class="navbar-search" href=""></a></div></div></nav><div class="blog-list-container" id="content-inner"><article class="article-container" id="post"><div class="article-header"><h1 class="article-title">基于 Webpack 和 ES6 打造 JavaScript 类库</h1><div class="article-subtitle"><div class="publish-time fl">发布时间:<span>2017/11/21 21:9:58</span></div><div class="categories">分类:<a href="/categories/frontend/"><span>frontend</span></a>/<a href="/categories/frontend/webpack/"><span>webpack</span></a></div></div></div><div class="article-word-count"><ul><div class="word-count-item">全文约<span class="post-count">2.2k</span>字</div><div class="word-count-item">预计需要<span class="post-count">9</span>分钟</div></ul></div><div class="article-content"><h2 id="首先，我们说的-“类库”-是指什么"><a href="#首先，我们说的-“类库”-是指什么" class="headerlink" title="首先，我们说的 “类库” 是指什么"></a>首先，我们说的 “类库” 是指什么</h2><blockquote><p>在 JavaScript 语境中，我对类库的定义是 “提供了特定功能的一段代段”。一个类库只做一件事，并且把这件事做好。在理想情况下，它不依赖其它类库或框架。jQuery 就是一个很好的例子。React 或者 Vue.js 也可以认为是一个类库。</p></blockquote><a id="more"></a><p>一个类库应该：</p><p>可以在浏览器环境下使用。也就是说，可以通过 script 标签来引入这个类库。<br>可以通过 npm 来安装。<br>兼容 ES6(ES2015) 的模块系统、CommonJS 和 AMD 模块规范。<br>用什么来开发这个类库并不重要，重要的是我们最终产出的文件。它只要满足上述要求就行。尽管如此，我还是比较喜欢用原生 JavaScript 写成的类库，因为这样更方便其它人贡献代码。</p><h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><p>我一般选择如下的目录结构：</p><pre class="line-numbers language-sh"><code class="language-sh">+-- lib
+|   +-- library.js
+|   +-- library.min.js
++-- src
+|   +-- index.js
++-- test
++-- lib
+|   +-- library.js
+|   +-- library.min.js
++-- src
+|   +-- index.js
++-- test<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>其中 src 目录用于存放源码文件，而 lib 目录用于存放最终编译的结果。这意味着类库的入口文件应该放在 lib 目录下，而不是 src 目录下。</p><p>起步动作</p><p>我确实很喜欢最新的 ES6 规范。但坏消息是它身上绑了一堆的附加工序。也许将来某一天我们可以摆脱转译过程，所写即所得；但现在还不行。通常我们需要用到 Babel 来完成转译这件事。Babel 可以把我们的 ES6 文件转换为 ES5 格式，但它并不打算处理打包事宜。或者换句话说，如果我们有以下文件：</p><pre class="line-numbers language-sh"><code class="language-sh">+-- lib
++-- src
+    +-- index.js (es6)
+    +-- helpers.js (es6)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><p>然后我们用上 Babel，那我们将会得到：</p><pre class="line-numbers language-sh"><code class="language-sh">+-- lib
+|   +-- index.js (es5)
+|   +-- helpers.js (es5)
++-- src
+    +-- index.js (es6)
+    +-- helpers.js (es6)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>或者再换句话说，Babel 并不解析代码中的 import 或 require 指令。因此，我们需要一个打包工具，而你应该已经猜到了，我的选择正是 webpack。最终我想达到的效果是这样的：</p><pre class="line-numbers language-sh"><code class="language-sh">+-- lib
+|   +-- library.js (es5)
+|   +-- library.min.js (es5)
++-- src
+    +-- index.js (es6)
+    +-- helpers.js (es6)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>npm 命令</p><p>在运行任务方面，npm 提供了一套不错的机制——scripts（脚本）。我们至少需要注册以下三个脚本：</p><pre class="line-numbers language-json"><code class="language-json"><span class="token property">"scripts"</span><span class="token operator">:</span> &amp;#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token property">"build"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+  <span class="token property">"dev"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+  <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"..."</span>
+&amp;#<span class="token number">125</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>npm run build – 这个脚本用来生成这个类库的最终压缩版文件。<br>npm run dev – 跟 build 类似，但它并不压缩代码；此外还需要启动一个监视进程。<br>npm run test – 用来运行测试。<br>构建开发版本</p><p>npm run dev 需要调用 webpack 并生成 lib/library.js 文件。我们从 webpack 的配置文件开始着手：</p><p>JavaScript</p><pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// webpack.config.js</span>
+<span class="token keyword">var</span> webpack <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'webpack'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> libraryName <span class="token operator">=</span> <span class="token string">'library'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> outputFile <span class="token operator">=</span> libraryName <span class="token operator">+</span> <span class="token string">'.js'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> config <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  entry<span class="token punctuation">:</span> __dirname <span class="token operator">+</span> <span class="token string">'/src/index.js'</span><span class="token punctuation">,</span>
+  devtool<span class="token punctuation">:</span> <span class="token string">'source-map'</span><span class="token punctuation">,</span>
+  output<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    path<span class="token punctuation">:</span> __dirname <span class="token operator">+</span> <span class="token string">'/lib'</span><span class="token punctuation">,</span>
+    filename<span class="token punctuation">:</span> outputFile<span class="token punctuation">,</span>
+    library<span class="token punctuation">:</span> libraryName<span class="token punctuation">,</span>
+    libraryTarget<span class="token punctuation">:</span> <span class="token string">'umd'</span><span class="token punctuation">,</span>
+    umdNamedDefine<span class="token punctuation">:</span> <span class="token boolean">true</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  module<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    loaders<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+      <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        test<span class="token punctuation">:</span> <span class="token regex">/(\.jsx|\.js)$/</span><span class="token punctuation">,</span>
+        loader<span class="token punctuation">:</span> <span class="token string">'babel'</span><span class="token punctuation">,</span>
+        exclude<span class="token punctuation">:</span> <span class="token regex">/(node_modules|bower_components)/</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+      <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        test<span class="token punctuation">:</span> <span class="token regex">/(\.jsx|\.js)$/</span><span class="token punctuation">,</span>
+        loader<span class="token punctuation">:</span> <span class="token string">"eslint-loader"</span><span class="token punctuation">,</span>
+        exclude<span class="token punctuation">:</span> <span class="token regex">/node_modules/</span>
+      <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">]</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  resolve<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    root<span class="token punctuation">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">'./src'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    extensions<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">''</span><span class="token punctuation">,</span> <span class="token string">'.js'</span><span class="token punctuation">]</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> config<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>即使你还没有使用 webpack 的经验，你或许也可以看明白这个配置文件做了些什么。我们定义了这个编译过程的输入（entry）和输出（output）。那个 module 属性指定了每个文件在处理过程中将被哪些模块处理。在我们的这个例子中，需要用到 Babel 和 ESLint，其中 ESLint 用来校验代码的语法和正确性。</p><p>这里有一个坑，花了我不少的时间。这个坑是关于 library、libraryTarget 和 umdNamedDefine 属性的。最开始我没有把它们写到配置中，结果编译结果就成了下面这个样子：</p><p>JavaScript</p><pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>modules<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> installedModules <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">function</span> <span class="token function">__webpack_require__</span><span class="token punctuation">(</span>moduleId<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>installedModules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">return</span> installedModules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span><span class="token punctuation">.</span>exports<span class="token punctuation">;</span>
+
+    <span class="token keyword">var</span> module <span class="token operator">=</span> installedModules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      exports<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+      id<span class="token punctuation">:</span> moduleId<span class="token punctuation">,</span>
+      loaded<span class="token punctuation">:</span> <span class="token boolean">false</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+    modules<span class="token punctuation">[</span>moduleId<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>module<span class="token punctuation">.</span>exports<span class="token punctuation">,</span> module<span class="token punctuation">,</span> module<span class="token punctuation">.</span>exports<span class="token punctuation">,</span> __webpack_require__<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    module<span class="token punctuation">.</span>loaded <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> module<span class="token punctuation">.</span>exports<span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+  __webpack_require__<span class="token punctuation">.</span>m <span class="token operator">=</span> modules<span class="token punctuation">;</span>
+  __webpack_require__<span class="token punctuation">.</span>c <span class="token operator">=</span> installedModules<span class="token punctuation">;</span>
+  __webpack_require__<span class="token punctuation">.</span>p <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> <span class="token function">__webpack_require__</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+  <span class="token keyword">function</span><span class="token punctuation">(</span>module<span class="token punctuation">,</span> exports<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// ... my code here</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>经过 webpack 编译之后的文件差不多都是这个样子。它采用的方式跟 Browserify 很类似。编译结果是一个自调用的函数，它会接收应用程序中所用到的所有模块。每个模块都被存放到到 modules 数组中。上面这段代码只包含了一个模块，而 __webpack_require__(0) 实际上相当于运行 src/index.js 文件中的代码。</p><p>光是得到这样一个打包文件，并没有满足我们在文章开头所提到的所有需求，因为我们还没有导出任何东西。这个文件的运行结果在网页中必定会被丢弃。不过，如果我们加上 library、libraryTarget 和umdNamedDefine，就可以让 webpack 在文件顶部注入一小段非常漂亮的代码片断：</p><p>JavaScript</p><pre class="line-numbers language-JavaScript"><code class="language-JavaScript">(function webpackUniversalModuleDefinition(root, factory) &#123;
+  if(typeof exports === 'object' && typeof module === 'object')
+    module.exports = factory();
+  else if(typeof define === 'function' && define.amd)
+    define("library", [], factory);
+  else if(typeof exports === 'object')
+    exports["library"] = factory();
+  else
+    root["library"] = factory();
+&#125;)(this, function() &#123;
+return (function(modules) &#123;
+ ...
+ ...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>把 libraryTarget 设定为 umd 表示采用 通用模块定义 来生成最终结果。而且这段代码确实可以识别不同的运行环境，并为我们的类库提供一个妥当的初始化机制。</p><p>构建生产环境所需的版本</p><p>对 webpack 来说，开发阶段与生产阶段之间唯一的区别在于压缩。运行 npm run build 应该生成一个压缩版——library.min.js。webpack 有一个不错的内置插件可以做到这一点：</p><p>JavaScript</p><pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// webpack.config.js</span>
+<span class="token operator">...</span>
+<span class="token keyword">var</span> UglifyJsPlugin <span class="token operator">=</span> webpack<span class="token punctuation">.</span>optimize<span class="token punctuation">.</span>UglifyJsPlugin<span class="token punctuation">;</span>
+<span class="token keyword">var</span> env <span class="token operator">=</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span>WEBPACK_ENV<span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> libraryName <span class="token operator">=</span> <span class="token string">'library'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> plugins <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> outputFile<span class="token punctuation">;</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>env <span class="token operator">===</span> <span class="token string">'build'</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  plugins<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">UglifyJsPlugin</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> minimize<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  outputFile <span class="token operator">=</span> libraryName <span class="token operator">+</span> <span class="token string">'.min.js'</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  outputFile <span class="token operator">=</span> libraryName <span class="token operator">+</span> <span class="token string">'.js'</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> config <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  entry<span class="token punctuation">:</span> __dirname <span class="token operator">+</span> <span class="token string">'/src/index.js'</span><span class="token punctuation">,</span>
+  devtool<span class="token punctuation">:</span> <span class="token string">'source-map'</span><span class="token punctuation">,</span>
+  output<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token operator">...</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  module<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token operator">...</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  resolve<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token operator">...</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  plugins<span class="token punctuation">:</span> plugins
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> config<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>只要我们把 UglifyJsPlugin 加入到 plugins 数组中，它就可以完成这个任务。此外，还一些事情有待明确。我们还需要某种条件判断逻辑，来告诉 webpack 需要生成哪一种类型（“开发阶段” 还是 “生产阶段”）的打包文件。一个常见的做法是定义一个环境变量，并将它通过命令行传进去。比如这样：</p><pre class="line-numbers language-JavaScript"><code class="language-JavaScript">
+// package.json
+"scripts": &#123;
+  "build": "WEBPACK_ENV=build webpack",
+  "dev": "WEBPACK_ENV=dev webpack --progress --colors --watch"
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>（请留意 –watch 选项。它会让 webpack 监视文件变化并持续运行构建任务。）</p><p>测试</p><p>我通常采用 Mocha 和 Chai 来运行测试——测试环节是这篇起步教程特有的内容。这里同样存在一个棘手的问题，就是如何让 Mocha 正确识别用 ES6 写的测试文件。不过谢天谢地，Babel 再次解决了这个问题。</p><pre class="line-numbers language-JavaScript"><code class="language-JavaScript">
+// package.json
+"scripts": &#123;
+  ...
+  "test": "mocha --compilers js:babel-core/register --colors -w ./test/*.spec.js"
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>这里最关键的部分在于 –compilers 这个选项。它允许我们在运行测试文件之前预先处理这个文件。</p><p>其它配置文件</p><p>在最新的 6.x 版本中，Babel 发生了一些重大的变化。现在，在指定哪些代码转换器将被启用时，我们需要面对一种叫作 presets 的东西。最简单配置的方法就是写一个 .babelrc 文件：</p><pre class="line-numbers language-JavaScript"><code class="language-JavaScript">
+// .babelrc &#123;
+  "presets": ["es2015"],
+  "plugins": ["babel-plugin-add-module-exports"]
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>ESLint 也需要一个类似的配置文件，叫作 .eslintrc：</p><pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// .eslintrc &amp;#123;</span>
+  <span class="token string">"ecmaFeatures"</span><span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token string">"globalReturn"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"jsx"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"modules"</span><span class="token punctuation">:</span> <span class="token boolean">true</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token string">"env"</span><span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token string">"browser"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"es6"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"node"</span><span class="token punctuation">:</span> <span class="token boolean">true</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token string">"globals"</span><span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token string">"document"</span><span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token string">"escape"</span><span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token string">"navigator"</span><span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token string">"unescape"</span><span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token string">"window"</span><span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token string">"describe"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"before"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"it"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"expect"</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string">"sinon"</span><span class="token punctuation">:</span> <span class="token boolean">true</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token string">"parser"</span><span class="token punctuation">:</span> <span class="token string">"babel-eslint"</span><span class="token punctuation">,</span>
+  <span class="token string">"plugins"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string">"rules"</span><span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// ... lots of lots of rules here</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>相关资料</p><p>用到的项目如下：</p><p>webpack<br>Babel<br>ESLint<br>Mocha, Chai<br>UMD<br>具体依赖如下：</p><pre><code>// package.json
+&quot;devDependencies&quot;: &#123;
+  &quot;babel&quot;: &quot;6.3.13&quot;,
+  &quot;babel-core&quot;: &quot;6.1.18&quot;,
+  &quot;babel-eslint&quot;: &quot;4.1.3&quot;,
+  &quot;babel-loader&quot;: &quot;6.1.0&quot;,
+  &quot;babel-plugin-add-module-exports&quot;: &quot;0.1.2&quot;,
+  &quot;babel-preset-es2015&quot;: &quot;6.3.13&quot;,
+  &quot;chai&quot;: &quot;3.4.1&quot;,
+  &quot;eslint&quot;: &quot;1.7.2&quot;,
+  &quot;eslint-loader&quot;: &quot;1.1.0&quot;,
+  &quot;mocha&quot;: &quot;2.3.4&quot;,
+  &quot;webpack&quot;: &quot;1.12.9&quot;
+&#125;
+// package.json
+&quot;devDependencies&quot;: &#123;
+  &quot;babel&quot;: &quot;6.3.13&quot;,
+  &quot;babel-core&quot;: &quot;6.1.18&quot;,
+  &quot;babel-eslint&quot;: &quot;4.1.3&quot;,
+  &quot;babel-loader&quot;: &quot;6.1.0&quot;,
+  &quot;babel-plugin-add-module-exports&quot;: &quot;0.1.2&quot;,
+  &quot;babel-preset-es2015&quot;: &quot;6.3.13&quot;,
+  &quot;chai&quot;: &quot;3.4.1&quot;,
+  &quot;eslint&quot;: &quot;1.7.2&quot;,
+  &quot;eslint-loader&quot;: &quot;1.1.0&quot;,
+  &quot;mocha&quot;: &quot;2.3.4&quot;,
+  &quot;webpack&quot;: &quot;1.12.9&quot;
+&#125;</code></pre></div><div id="side-right-bar"><div class="close-right-bar"></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经阅读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A6%96%E5%85%88%EF%BC%8C%E6%88%91%E4%BB%AC%E8%AF%B4%E7%9A%84-%E2%80%9C%E7%B1%BB%E5%BA%93%E2%80%9D-%E6%98%AF%E6%8C%87%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">首先，我们说的 “类库” 是指什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">目录结构</span></a></li></ol></div></div></div><div class="right-btn" id="right-btn"><span>目录</span></div><div class="article-bottom"><div class="addthis_inline_share_toolbox fr"></div></div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者:</span><span class="post-copyright-info"><a href="mailto:undefined">CavinHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接:</span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="http://blog.zukmb.cnposts/90c38e42/">http://blog.zukmb.cn/posts/90c38e42/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明:</span><span class="post-copyright-info">转载请注明来自<a href="http://blog.zukmb.cn" target="_blank" style="font-size: 18px;">CavinHuangのBlog</a>！</span></div></div><div class="article-pagenate"><div class="article-prev fl"><span>←</span><a href="/posts/fae4e3c2/">Request —— 让 Node.js http请求变得超简单</a></div><div class="article-next fr"><a href="/posts/60ad6505/">Linux的cron和crontab</a><span>→</span></div></div></article></div><footer class="footer"><div id="toTop" style="display: none;">Back to Top</div><div class="footer-content"><p>©2015 - 2018 By cavinHuang</p><div class="framework-info"><span>Driven -</span> <a target="_blank" rel="noopener" href="https://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme -</span> <a href=""><span>yoyo</span></a></div><div class="site-count"><ul><div class="site-count-item"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></div><div class="site-count-item"><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span></div></ul></div></div></footer><script>(function(){
+var bp = document.createElement('script');
+var curProtocol = window.location.protocol.split(':')[0];
+if (curProtocol === 'https') {
+bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+}
+else {
+bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+}
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(bp, s);
+})();
+</script><script>(function(){
+var src = (document.location.protocol == "http:") ? "http://js.passport.qihucdn.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5":"https://jspassport.ssl.qhimg.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5";
+document.write('<script src="' + src + '" id="sozz"><\\/script>');
+})();
+</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-124916034-1"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-124916034-1');</script></div></div><canvas class="fireworks"></canvas><script src="/js/velocity.ui.min.js"></script><script src="/js/yoyo.js"></script><script src="/js/scroll.js"></script><script src="/js/anime.min.js"></script><script src="/js/fireworks.js"></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

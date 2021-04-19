@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="baidu-site-verification" content="rqskM4bdtP"><meta name="viewport" content="device-width, initial-scale=1, maximum-scale=1,user-scalable=no"><title>给vue配置axios包括报错,鉴权,跳转,拦截,提示的封装-CavinHuangのBlog-http://blog.zukmb.cn</title><meta name="keywords" content="前端学习,php学习,个人博客,HTML,CSS,JS"><meta name="description" content="cavinHuang个人博客，这里记录学习和生活的点滴！"><meta name="google-site-verification" content="zOYxWUgmeogC0qY76WLP0eWl8r9E8jk_qU927Ij7tbs"><script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5a4c3745fa28006f"></script><link rel="stylesheet" href="/css/yoyo.css"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.3"><script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script><script src="https://cdn.bootcss.com/velocity/1.5.0/velocity.min.js"></script><meta name="generator" content="Hexo 5.3.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body></body></html><div class="app"><div class="left-container"><div class="left-layout-container pc"><div class="user-info"><a href="/"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4"></a><div class="login-name">CavinHuang</div><div class="slog">来不及总结自己,愿天大地大,我独一无二!</div></div><ul class="other-site"><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/github.png"></li><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/weibo.png"></li></ul><ul class="left-menu"><li><a href="/archives">文章</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about">关于</a></li></ul><div class="qq-group"><span>读万卷书</span><span>行万里路</span></div><div class="copyright">@ 2017 - 2017 CavinHuang</div></div></div><div id="app-aside"><aside class="aside"><div class="aside-user"><div class="avatar"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4" alt="CavinHuang"></div><div class="profile"><h3 class="name">CavinHuang</h3><p class="email">来不及总结自己,愿天大地大,我独一无二!</p></div></div><div class="aside-nav"><nav class="nav-list"><a class="item" href="/archives"><span>文章</span></a><a class="item" href="/categories"><span>分类</span></a><a class="item" href="/tags"><span>标签</span></a><a class="item" href="/about"><span>关于</span></a></nav></div></aside></div><div class="blog-container main-container" id="content-outer"><nav class="navbar"><div class="navbar-container"><div class="navbar-header"><a class="navbar-menu" id="navMenu" href="javascript:;" data-isOpen="false"><i class="iconfont icon-menu"></i></a><a class="navbar-logo" href="/"><img src="/assets/img/logo.png"></a><a class="navbar-search" href=""></a></div></div></nav><div class="blog-list-container" id="content-inner"><article class="article-container" id="post"><div class="article-header"><h1 class="article-title">给vue配置axios包括报错,鉴权,跳转,拦截,提示的封装</h1><div class="article-subtitle"><div class="publish-time fl">发布时间:<span>2018/2/27 20:53:9</span></div><div class="categories">分类:<a href="/categories/frontend/"><span>frontend</span></a>/<a href="/categories/frontend/vue/"><span>vue</span></a></div></div></div><div class="article-word-count"><ul><div class="word-count-item">全文约<span class="post-count">1.6k</span>字</div><div class="word-count-item">预计需要<span class="post-count">7</span>分钟</div></ul></div><div class="article-content"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>不推荐完全copy过去,可以看看我是如何针对我这边业务;<br>做的一个axios的封装及实现的思路</p><a id="more"></a><h1 id="需求及实现"><a href="#需求及实现" class="headerlink" title="需求及实现"></a>需求及实现</h1><ul><li>统一捕获接口报错</li><li>弹窗提示</li><li>报错重定向</li><li>基础鉴权</li><li>表单序列化</li></ul><p>#实现的功能</p><ul><li>统一捕获接口报错 : 用的axios内置的拦截器</li><li>弹窗提示: 引入 Element UI的Message组件</li><li>报错重定向: 路由钩子</li><li>基础鉴权: 服务端过期时间戳和token,还有借助路由的钩子</li><li>表单序列化: 我这边直接用qs(npm模块),你有时间也可以自己写<br>用法及封装<br>用法<pre class="line-numbers language-js"><code class="language-js"><span class="token comment" spellcheck="true">// 服务层 , import默认会找该目录下index.js的文件,这个可能有小伙伴不知道</span>
+<span class="token comment" spellcheck="true">// 可以去了解npm的引入和es6引入的理论概念</span>
+<span class="token keyword">import</span> axiosPlugin <span class="token keyword">from</span> <span class="token string">"./server"</span><span class="token punctuation">;</span>
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>axiosPlugin<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre> 对axios的封装(AXIOS:index.js)<pre class="line-numbers language-js"><code class="language-js"><span class="token keyword">import</span> axios <span class="token keyword">from</span> <span class="token string">"axios"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> qs <span class="token keyword">from</span> <span class="token string">"qs"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> Message <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">from</span> <span class="token string">"element-ui"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> router <span class="token keyword">from</span> <span class="token string">"../router"</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></li></ul><p>const Axios = axios.create({<br> baseURL: “/“, // 因为我本地做了反向代理<br> timeout: 10000,<br> responseType: “json”,<br> withCredentials: true, // 是否允许带cookie这些<br> headers: {<br> “Content-Type”: “application/x-www-form-urlencoded;charset=utf-8”<br> }<br>});</p><p>//POST传参序列化(添加请求拦截器)<br>Axios.interceptors.request.use(<br> config =&gt; {<br> // 在发送请求之前做某件事<br> if (<br> config.method === “post” ||<br> config.method === “put” ||<br> config.method === “delete”<br> ) {<br> // 序列化<br> config.data = qs.stringify(config.data);<br> }</p><pre><code>// 若是有做鉴权token , 就给头部带上token
+if (localStorage.token) &#123;
+  config.headers.Authorization = localStorage.token;
+&#125;
+return config;</code></pre><p> },<br> error =&gt; {<br> Message({<br> // 饿了么的消息弹窗组件,类似toast<br> showClose: true,<br> message: error,<br> type: “error.data.error.message”<br> });<br> return Promise.reject(error.data.error.message);<br> }<br>);</p><p>//返回状态判断(添加响应拦截器)<br>Axios.interceptors.response.use(<br> res =&gt; {<br> //对响应数据做些事<br> if (res.data &amp;&amp; !res.data.success) {<br> Message({<br> // 饿了么的消息弹窗组件,类似toast<br> showClose: true,<br> message: res.data.error.message.message<br> ? res.data.error.message.message<br> : res.data.error.message,<br> type: “error”<br> });<br> return Promise.reject(res.data.error.message);<br> }<br> return res;<br> },<br> error =&gt; {<br> // 用户登录的时候会拿到一个基础信息,比如用户名,token,过期时间戳<br> // 直接丢localStorage或者sessionStorage<br> if (!window.localStorage.getItem(“loginUserBaseInfo”)) {<br> // 若是接口访问的时候没有发现有鉴权的基础信息,直接返回登录页<br> router.push({<br> path: “/login”<br> });<br> } else {<br> // 若是有基础信息的情况下,判断时间戳和当前的时间,若是当前的时间大于服务器过期的时间<br> // 乖乖的返回去登录页重新登录<br> let lifeTime =<br> JSON.parse(window.localStorage.getItem(“loginUserBaseInfo”)).lifeTime *<br> 1000;<br> let nowTime = new Date().getTime(); // 当前时间的时间戳<br> console.log(nowTime, lifeTime);<br> console.log(nowTime &gt; lifeTime);<br> if (nowTime &gt; lifeTime) {<br> Message({<br> showClose: true,<br> message: “登录状态信息过期,请重新登录”,<br> type: “error”<br> });<br> router.push({<br> path: “/login”<br> });<br> } else {<br> // 下面是接口回调的satus ,因为我做了一些错误页面,所以都会指向对应的报错页面<br> if (error.response.status === 403) {<br> router.push({<br> path: “/error/403”<br> });<br> }<br> if (error.response.status === 500) {<br> router.push({<br> path: “/error/500”<br> });<br> }<br> if (error.response.status === 502) {<br> router.push({<br> path: “/error/502”<br> });<br> }<br> if (error.response.status === 404) {<br> router.push({<br> path: “/error/404”<br> });<br> }<br> }<br> }<br> // 返回 response 里的错误信息<br> let errorInfo = error.data.error ? error.data.error.message : error.data;<br> return Promise.reject(errorInfo);<br> }<br>);</p><p>// 对axios的实例重新封装成一个plugin ,方便 Vue.use(xxxx)<br>export default {<br> install: function(Vue, Option) {<br> Object.defineProperty(Vue.prototype, “$http”, { value: Axios });<br> }<br>};</p><pre><code>
+路由钩子的调整(Router:index.js)
+
+```js
+import Vue from &quot;vue&quot;;
+import Router from &quot;vue-router&quot;;
+import layout from &quot;@/_components/layout/layout&quot;;
+// 版块有点多,版块独立路由管理,里面都是懒加载引入
+import customerManage from &quot;./customerManage&quot;; // 客户管理
+import account from &quot;./account&quot;; //登录
+import adManage from &quot;./adManage&quot;; // 广告管理
+import dataStat from &quot;./dataStat&quot;; // 数据统计
+import logger from &quot;./logger&quot;; // 日志
+import manager from &quot;./manager&quot;; // 管理者
+import putonManage from &quot;./putonManage&quot;; // 投放管理
+import error from &quot;./error&quot;; // 服务端错误
+import &#123; Message &#125; from &quot;element-ui&quot;;
+
+Vue.use(Router);
+
+// 请跳过这一段,看下面的
+const router = new Router(&#123;
+  hashbang: false,
+  mode: &quot;history&quot;,
+  routes: [
+    &#123;
+      path: &quot;/&quot;,
+      redirect: &quot;/adver&quot;,
+      component: layout,
+      children: [
+        ...customerManage,
+        ...adManage,
+        ...dataStat,
+        ...putonManage,
+        ...manager,
+        ...logger
+      ]
+    &#125;,
+    ...account,
+    ...error
+  ]
+&#125;);
+
+// 路由拦截
+// 差点忘了说明,不是所有版块都需要鉴权的
+// 所以需要鉴权,我都会在路由meta添加添加一个字段requireLogin,设置为true的时候
+// 这货就必须走鉴权,像登录页这些不要,是可以直接访问的!!!
+router.beforeEach((to, from, next) =&gt; &#123;
+  if (to.matched.some(res =&gt; res.meta.requireLogin)) &#123;
+    // 判断是否需要登录权限
+    if (window.localStorage.getItem(&quot;loginUserBaseInfo&quot;)) &#123;
+      // 判断是否登录
+      let lifeTime =
+        JSON.parse(window.localStorage.getItem(&quot;loginUserBaseInfo&quot;)).lifeTime *
+        1000;
+      let nowTime = (new Date()).getTime(); // 当前时间的时间戳
+      if (nowTime &lt; lifeTime) &#123;
+        next();
+      &#125; else &#123;
+        Message(&#123;
+          showClose: true,
+          message: &quot;登录状态信息过期,请重新登录&quot;,
+          type: &quot;error&quot;
+        &#125;);
+        next(&#123;
+          path: &quot;/login&quot;
+        &#125;);
+      &#125;
+    &#125; else &#123;
+      // 没登录则跳转到登录界面
+      next(&#123;
+        path: &quot;/login&quot;
+      &#125;);
+    &#125;
+  &#125; else &#123;
+    next();
+  &#125;
+&#125;);
+
+export default router;</code></pre><p>axios可配置的一些选项,其他的具体看官网说明哈</p><pre class="line-numbers language-js"><code class="language-js"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 请求地址</span>
+  url<span class="token punctuation">:</span> <span class="token string">"/user"</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 请求类型</span>
+  method<span class="token punctuation">:</span> <span class="token string">"get"</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 请根路径</span>
+  baseURL<span class="token punctuation">:</span> <span class="token string">"http://www.mt.com/api"</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 请求前的数据处理</span>
+  transformRequest<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token keyword">function</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 请求后的数据处理</span>
+  transformResponse<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token keyword">function</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 自定义的请求头</span>
+  headers<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token string">"x-Requested-With"</span><span class="token punctuation">:</span> <span class="token string">"XMLHttpRequest"</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// URL查询对象</span>
+  params<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> id<span class="token punctuation">:</span> <span class="token number">12</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 查询对象序列化函数</span>
+  paramsSerializer<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// request body</span>
+  data<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> key<span class="token punctuation">:</span> <span class="token string">"aa"</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 超时设置s</span>
+  timeout<span class="token punctuation">:</span> <span class="token number">1000</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 跨域是否带Token</span>
+  withCredentials<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 自定义请求处理</span>
+  adapter<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>resolve<span class="token punctuation">,</span> reject<span class="token punctuation">,</span> config<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 身份验证信息</span>
+  auth<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> uname<span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">,</span> pwd<span class="token punctuation">:</span> <span class="token string">"12"</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 响应的数据格式 json / blob /document /arraybuffer / text / stream</span>
+  responseType<span class="token punctuation">:</span> <span class="token string">"json"</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// xsrf 设置</span>
+  xsrfCookieName<span class="token punctuation">:</span> <span class="token string">"XSRF-TOKEN"</span><span class="token punctuation">,</span>
+  xsrfHeaderName<span class="token punctuation">:</span> <span class="token string">"X-XSRF-TOKEN"</span><span class="token punctuation">,</span>
+
+  <span class="token comment" spellcheck="true">// 下传和下载进度回调</span>
+  onUploadProgress<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>progressEvent<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    Math<span class="token punctuation">.</span><span class="token function">round</span><span class="token punctuation">(</span>progressEvent<span class="token punctuation">.</span>loaded <span class="token operator">*</span> <span class="token number">100</span> <span class="token operator">/</span> progressEvent<span class="token punctuation">.</span>total<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  onDownloadProgress<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>progressEvent<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+
+  <span class="token comment" spellcheck="true">// 最多转发数，用于node.js</span>
+  maxRedirects<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 最大响应数据大小</span>
+  maxContentLength<span class="token punctuation">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 自定义错误状态码范围</span>
+  validateStatus<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> status <span class="token operator">>=</span> <span class="token number">200</span> <span class="token operator">&amp;&amp;</span> status <span class="token operator">&lt;</span> <span class="token number">300</span><span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 用于node.js</span>
+  httpAgent<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">http<span class="token punctuation">.</span>Agent</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> keepAlive<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  httpsAgent<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">https<span class="token punctuation">.</span>Agent</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> keepAlive<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+  <span class="token comment" spellcheck="true">// 用于设置跨域请求代理</span>
+  proxy<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    host<span class="token punctuation">:</span> <span class="token string">"127.0.0.1"</span><span class="token punctuation">,</span>
+    port<span class="token punctuation">:</span> <span class="token number">8080</span><span class="token punctuation">,</span>
+    auth<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      username<span class="token punctuation">:</span> <span class="token string">"aa"</span><span class="token punctuation">,</span>
+      password<span class="token punctuation">:</span> <span class="token string">"2123"</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 用于取消请求</span>
+  cancelToken<span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">CancelToken</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>cancel<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>总结<br>我这个封装虽说不是万金油版本,但是我感觉大多用axios结合vue的小伙伴,<br>稍微改改都能直接拿来用~~~哟吼吼,哟吼吼…..</p></div><div id="side-right-bar"><div class="close-right-bar"></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经阅读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E5%8F%8A%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">需求及实现</span></a></li></ol></div></div></div><div class="right-btn" id="right-btn"><span>目录</span></div><div class="article-bottom"><div class="addthis_inline_share_toolbox fr"></div></div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者:</span><span class="post-copyright-info"><a href="mailto:undefined">CavinHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接:</span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="http://blog.zukmb.cnposts/2f8ec77/">http://blog.zukmb.cn/posts/2f8ec77/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明:</span><span class="post-copyright-info">转载请注明来自<a href="http://blog.zukmb.cn" target="_blank" style="font-size: 18px;">CavinHuangのBlog</a>！</span></div></div><div class="article-pagenate"><div class="article-prev fl"><span>←</span><a href="/posts/325a0cd4/">svn常用命令</a></div><div class="article-next fr"><a href="/posts/5146c33e/">一步一步完成一个node-cli</a><span>→</span></div></div></article></div><footer class="footer"><div id="toTop" style="display: none;">Back to Top</div><div class="footer-content"><p>©2015 - 2018 By cavinHuang</p><div class="framework-info"><span>Driven -</span> <a target="_blank" rel="noopener" href="https://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme -</span> <a href=""><span>yoyo</span></a></div><div class="site-count"><ul><div class="site-count-item"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></div><div class="site-count-item"><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span></div></ul></div></div></footer><script>(function(){
+var bp = document.createElement('script');
+var curProtocol = window.location.protocol.split(':')[0];
+if (curProtocol === 'https') {
+bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+}
+else {
+bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+}
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(bp, s);
+})();
+</script><script>(function(){
+var src = (document.location.protocol == "http:") ? "http://js.passport.qihucdn.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5":"https://jspassport.ssl.qhimg.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5";
+document.write('<script src="' + src + '" id="sozz"><\\/script>');
+})();
+</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-124916034-1"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-124916034-1');</script></div></div><canvas class="fireworks"></canvas><script src="/js/velocity.ui.min.js"></script><script src="/js/yoyo.js"></script><script src="/js/scroll.js"></script><script src="/js/anime.min.js"></script><script src="/js/fireworks.js"></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

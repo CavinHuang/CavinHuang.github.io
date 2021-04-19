@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="baidu-site-verification" content="rqskM4bdtP"><meta name="viewport" content="device-width, initial-scale=1, maximum-scale=1,user-scalable=no"><title>说到加载图片，我们可以谈些什么-CavinHuangのBlog-http://blog.zukmb.cn</title><meta name="keywords" content="前端学习,php学习,个人博客,HTML,CSS,JS"><meta name="description" content="cavinHuang个人博客，这里记录学习和生活的点滴！"><meta name="google-site-verification" content="zOYxWUgmeogC0qY76WLP0eWl8r9E8jk_qU927Ij7tbs"><script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5a4c3745fa28006f"></script><link rel="stylesheet" href="/css/yoyo.css"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.3"><script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script><script src="https://cdn.bootcss.com/velocity/1.5.0/velocity.min.js"></script><meta name="generator" content="Hexo 5.3.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body></body></html><div class="app"><div class="left-container"><div class="left-layout-container pc"><div class="user-info"><a href="/"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4"></a><div class="login-name">CavinHuang</div><div class="slog">来不及总结自己,愿天大地大,我独一无二!</div></div><ul class="other-site"><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/github.png"></li><li><img src="http://www.17sucai.com/preview/177065/2017-09-28/Mon9/static/img/weibo.png"></li></ul><ul class="left-menu"><li><a href="/archives">文章</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about">关于</a></li></ul><div class="qq-group"><span>读万卷书</span><span>行万里路</span></div><div class="copyright">@ 2017 - 2017 CavinHuang</div></div></div><div id="app-aside"><aside class="aside"><div class="aside-user"><div class="avatar"><img src="https://avatars1.githubusercontent.com/u/24950299?s=460&amp;v=4" alt="CavinHuang"></div><div class="profile"><h3 class="name">CavinHuang</h3><p class="email">来不及总结自己,愿天大地大,我独一无二!</p></div></div><div class="aside-nav"><nav class="nav-list"><a class="item" href="/archives"><span>文章</span></a><a class="item" href="/categories"><span>分类</span></a><a class="item" href="/tags"><span>标签</span></a><a class="item" href="/about"><span>关于</span></a></nav></div></aside></div><div class="blog-container main-container" id="content-outer"><nav class="navbar"><div class="navbar-container"><div class="navbar-header"><a class="navbar-menu" id="navMenu" href="javascript:;" data-isOpen="false"><i class="iconfont icon-menu"></i></a><a class="navbar-logo" href="/"><img src="/assets/img/logo.png"></a><a class="navbar-search" href=""></a></div></div></nav><div class="blog-list-container" id="content-inner"><article class="article-container" id="post"><div class="article-header"><h1 class="article-title">说到加载图片，我们可以谈些什么</h1><div class="article-subtitle"><div class="publish-time fl">发布时间:<span>2016/4/28 23:54:0</span></div><div class="categories">分类:<a href="/categories/frontend/"><span>frontend</span></a>/<a href="/categories/frontend/js/"><span>js</span></a></div></div></div><div class="article-word-count"><ul><div class="word-count-item">全文约<span class="post-count">1.5k</span>字</div><div class="word-count-item">预计需要<span class="post-count">5</span>分钟</div></ul></div><div class="article-content"><p><img src="/posts/bc3de361/blogImg/lazyload.jpg" alt="原图 by Denis Perepelenko"></p><a id="more"></a><p>其实，一开始让我在网页中加载一张图片，我是，是拒绝的…因为实在太简单了。</p><p><code>&lt;img src=&quot;xx.jpg&quot; /&gt;</code>是每个前端开发都会的技能。然而，如果你想做到极致，事情还没有这么简单。</p><p>最近实现了个图片加载器，用于大型web前端项目中，关于加载图片这一话题，仔细想来可以加许多的特技。</p><p>###第一步：滚屏加载</p><p>这是最容易想到的点，也是一开始就准备做的。</p><p>随web体验的进步，滚屏加载代替分页加载的情形越来越多。也就是先预留图片位置，而不去加载图片，直到这个预留区域滚动到屏幕中，用户能看见了，才去加载图片。如此一来，有“按需加载”的意味，由于图片加载延后，不抢占带宽，在打开页面的首屏会快很多。我们称之为“懒加载(lazyload)”。</p><p>其实现也很简单，在html里面写<code>&lt;img lazy-src=&quot;xx.jpg&quot; /&gt;</code>，然后用js去判断这个节点是否出现在屏幕中，如果是，则取出<code>lazy-src</code>属性，赋值成<code>&lt;img lazy-src=&quot;xx.jpg&quot; src=&quot;xx.jpg&quot;/&gt;</code>，触发此节点onload，这就实现最简单的滚屏加载了。</p><p>###第二步：特殊状态处理</p><p>特殊状态有两种：加载中与加载失败。这两种情况的处理逻辑相类似，拿加载中的逻辑做例子。</p><p>图片触发加载，到图片加载完成（或失败）之间，肯定会有一段时间。不做处理的话，用户在等待的过程中，就只能看到空白的区域，非常的奇怪。在低网速，以及用户非常快的拉滚动条的情形下，这种现象将更加明显。</p><p>那么在触发onload之前，就需要补一些逻辑，展示对应的loading图。<br>将需要处理的img节点作为参数，调用tempImg函数，克隆一个节点强行插在img之前，用于loading中的展示。</p><pre><code>    var tempImg = function(target)&#123;
+        var w = target.width();
+        var h = target.height();
+        var tempDom = target.clone().addClass(&quot;lazy-loding&quot;).insertBefore(target);
+
+        if(w/h == 1)&#123;
+            tempDom[0].src = &quot;http://9.url.cn/edu/img/img-loading.png&quot;;
+        &#125;else&#123;
+            tempDom[0].src = &quot;http://9.url.cn/edu/img/img-loading2.png&quot;;
+        &#125;
+        target.hide();
+    &#125;</code></pre><p>###第三步：上报监控</p><p>这一步在大型前端项目中非常重要，也是经常被忽略的地方。尽管需要简易的后台配合，但不算麻烦的上报监控，能让产品更加稳定和健壮。</p><p>我在两个地方用到了上报。其一是图片加载失败，触发<code>onerror</code>时，这样一来我们能知道每天图片拉取失败的量；其二是图片加载的时间，能够帮助我们分析cdn服务是否异常，分析全国慢速用户比例等等。</p><p>而所谓的上报其实就是一个http请求，我会大概把这些信息带上</p><pre><code>    log(&#123;
+        &#39;type&#39;: &#39;error&#39;,
+        &#39;msg&#39;: &#39;lazyload拉取图片失败上报 &#39;,
+        &#39;url&#39;: window.location.href,
+        &#39;pid&#39;: 414342  //产品对应的id
+    &#125;);</code></pre><p>###第四步：居中截取</p><p>这是前端无可避免的一个问题，先来说下此问题的背景。</p><p>由于我们是先用一个空白的img标签占位，再去加载图片，如果图片的高度特别长（比如新浪长微博），加载完成时就会撑开节点，引起滚动条的跳动。由于移动端屏幕较PC窄，一个跳动就可能让你找不到前一秒正在浏览的内容，这种体验尤其严重。在移动端的web设计中，可以看到许多知名互联网公司的产品，也经常忽略这一点。</p><p>因此我们可以限定占位区域的size，以此区域来做居中截取。当占位区域与图片最终展示同宽同高时，就不会引起跳动，而且也保持了视觉的一致性。</p><p>其原理如下，先判断是竖向长型图，还是横向长型图，根据不同的情况，优先让宽或高填充满占位区域，然后通过不同的负margin去实现居中。</p><pre><code>    var calSize = function($img) &#123;
+        var w = $img.width(), h = $img.height(), width = size[0], height = size[1];
+        if(w+h == 0) return;
+
+        //如果是长型图，优先适配宽度，高度居中截取
+        if(w/h &gt; width/height)&#123;
+            var newWidth = height * w / h;
+            var margin = (width - newWidth)/2;
+            $img.height(height).css(&#123;&quot;margin-left&quot;: margin&#125;);
+        &#125;else&#123;
+            var newHeight = width * h / w;
+            var margin = (height - newHeight)/2;
+            $img.width(width).css(&#123;&quot;margin-top&quot;: margin&#125;);
+        &#125;
+    &#125;</code></pre><p>###第五步：支持webp</p><p>webp格式图片是google开发的一种旨在加快图片加载速度的图片格式，压缩提交大概只有jpg的2/3。随chrome的比例越来越多，其实让更多用户体验到webp也是一件好事。</p><p>那么问题来了，怎么去判断用户的浏览器是否支持webp呢？<br>根据ua去判断是个好方法，但不太靠谱，因为chrome中其实也有设置，让它不能去支持webp，而且webkit本身就开源，会衍生出很多你不知道名字的浏览器。</p><p>最终我使用的是特性检测：</p><pre><code>    if(!supportedWebPIsLoading) &#123;
+        supportedWebPIsLoading = true;
+        var images = &#123;
+            basic: &quot;data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAACyAgCdASoCAAEALmk0mk0iIiIiIgBoSygABc6zbAAA/v56QAAAAA==&quot;
+        &#125;, $img = new Image();
+        $img.onload = function () &#123;
+            supportedWebPIsLoading = false;
+            $.cookie.set(&quot;iswebp&quot; , +supportedWebP);
+        &#125;;
+        $img.onerror = function () &#123;
+            supportedWebP = false;
+            supportedWebPIsLoading = false;
+            $.cookie.set(&quot;iswebp&quot; , +supportedWebP);
+        &#125;;
+        $img.src = images.basic;
+    &#125;</code></pre><p>我们会让浏览器试着加载一张非常小的base64格式的webp图片，如果能够正常加载，说明是支持webp的。</p><p>并且，会把测试记录在cookie里，所以第二次直接从cookie里读结果，基本不会影响性能。完成了最重要的检查，我们就可以放心让服务器返回不同格式的图片了。</p><p>End.</p></div><div id="side-right-bar"><div class="close-right-bar"></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经阅读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"></div></div></div><div class="right-btn" id="right-btn"><span>目录</span></div><div class="article-bottom"><div class="addthis_inline_share_toolbox fr"></div></div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者:</span><span class="post-copyright-info"><a href="mailto:undefined">CavinHuang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接:</span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="http://blog.zukmb.cnposts/bc3de361/">http://blog.zukmb.cn/posts/bc3de361/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明:</span><span class="post-copyright-info">转载请注明来自<a href="http://blog.zukmb.cn" target="_blank" style="font-size: 18px;">CavinHuangのBlog</a>！</span></div></div><div class="article-pagenate"><div class="article-prev fl"><span>←</span><a href="/posts/4cac943d/">统一处理异步的js回调</a></div><div class="article-next fr"><a href="/posts/9cbe617c/">instagram图片拉取小经验</a><span>→</span></div></div></article></div><footer class="footer"><div id="toTop" style="display: none;">Back to Top</div><div class="footer-content"><p>©2015 - 2018 By cavinHuang</p><div class="framework-info"><span>Driven -</span> <a target="_blank" rel="noopener" href="https://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme -</span> <a href=""><span>yoyo</span></a></div><div class="site-count"><ul><div class="site-count-item"><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></div><div class="site-count-item"><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span></div></ul></div></div></footer><script>(function(){
+var bp = document.createElement('script');
+var curProtocol = window.location.protocol.split(':')[0];
+if (curProtocol === 'https') {
+bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+}
+else {
+bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+}
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(bp, s);
+})();
+</script><script>(function(){
+var src = (document.location.protocol == "http:") ? "http://js.passport.qihucdn.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5":"https://jspassport.ssl.qhimg.com/11.0.1.js?e055b4dda1d8e03e86cb32d91596a2c5";
+document.write('<script src="' + src + '" id="sozz"><\\/script>');
+})();
+</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-124916034-1"></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-124916034-1');</script></div></div><canvas class="fireworks"></canvas><script src="/js/velocity.ui.min.js"></script><script src="/js/yoyo.js"></script><script src="/js/scroll.js"></script><script src="/js/anime.min.js"></script><script src="/js/fireworks.js"></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

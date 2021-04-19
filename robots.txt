@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /archives/
+Allow: /categories/
+Allow: /tags/
+Sitemap: http://blog.zukmb.cn/sitemap.xml
+Sitemap: http://blog.zukmb.cn/baidusitemap.xml
