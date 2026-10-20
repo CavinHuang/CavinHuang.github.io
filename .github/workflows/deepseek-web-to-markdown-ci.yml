@@ -1,0 +1,28 @@
+name: DeepSeek Web to Markdown CI
+
+on:
+  push:
+    branches:
+      - feat/deepseek-web-to-markdown-source-20261020
+    paths:
+      - 'projects/deepseek-web-to-markdown/**'
+      - '.github/workflows/deepseek-web-to-markdown-ci.yml'
+  pull_request:
+    paths:
+      - 'projects/deepseek-web-to-markdown/**'
+      - '.github/workflows/deepseek-web-to-markdown-ci.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/deepseek-web-to-markdown
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
