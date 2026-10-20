@@ -1,0 +1,28 @@
+{
+  "name": "deepseek-web-to-markdown",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A local-first web-to-Markdown workspace powered by the DeepSeek Fetch API.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc -b --pretty"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.6",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.468.0",
+    "marked": "^15.0.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.7"
+  }
+}
